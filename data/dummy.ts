@@ -36,7 +36,7 @@ export const dummyCourses: Course[] = [
     id: 3,
     title: 'Copywriting Persuasif',
     category: 'Copywriting',
-    thumbnail: 'https://picsum.photos/seed/copy/400/225',
+    thumbnail: 'https://media.geeksforgeeks.org/wp-content/uploads/20240116130943/What-is-Copywriting-copy.webp',
     description: 'Kuasai seni menulis teks iklan yang menjual dan mampu menarik perhatian pelanggan.',
     videos: [
       { title: 'Pengenalan Copywriting', duration: '15:58', videoUrl: 'https://www.youtube.com/watch?v=w7drAXsN8xA' },
@@ -48,7 +48,7 @@ export const dummyCourses: Course[] = [
     id: 4,
     title: 'Membangun Personal Branding',
     category: 'Branding',
-    thumbnail: 'https://picsum.photos/seed/brand/400/225',
+    thumbnail: 'https://osindojabar.id/wp-content/uploads/2024/05/personalbranding.jpg',
     description: 'Bangun citra diri yang kuat di dunia digital untuk meningkatkan karir dan bisnis Anda.',
     videos: [
       { title: 'Pengenalan Personal Branding', duration: '12:12', videoUrl: 'https://www.youtube.com/watch?v=rXFv62-noaI' },
@@ -60,7 +60,7 @@ export const dummyCourses: Course[] = [
     id: 5,
     title: 'Google Ads untuk Pemula',
     category: 'Ads',
-    thumbnail: 'https://picsum.photos/seed/googleads/400/225',
+    thumbnail: 'https://kalpata.co.id/wp-content/uploads/2024/05/5.24.22-google-ad-updates.png',
     description: 'Pelajari cara kerja Google Ads dan bagaimana cara menggunakannya untuk menjangkau pelanggan potensial.',
     videos: [
       { title: 'Pengantar Google Ads', duration: '10:25', videoUrl: 'https://www.youtube.com/watch?v=_iswCWy1v8Q' },
@@ -72,7 +72,7 @@ export const dummyCourses: Course[] = [
     id: 6,
     title: 'Link Building Efektif',
     category: 'SEO',
-    thumbnail: 'https://picsum.photos/seed/linkbuild/400/225',
+    thumbnail: 'https://mona.media/wp-content/uploads/2023/03/link-building-la-gi.jpg',
     description: 'Strategi mendapatkan backlink berkualitas untuk meningkatkan ranking website Anda.',
     videos: [
       { title: 'Pengenalan Link Building', duration: '14:11', videoUrl: 'https://www.youtube.com/watch?v=oFyF417Q0oM' },
