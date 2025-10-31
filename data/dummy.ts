@@ -12,7 +12,7 @@ export const dummyCourses: Course[] = [
     id: 1,
     title: 'Dasar Facebook Ads',
     category: 'Ads',
-    thumbnail: 'https://picsum.photos/seed/fbads/400/225',
+    thumbnail: 'https://course-net.com/wp-content/uploads/2022/10/Facebook-ads-guide-for-beginners-costa-del-sol-marbella-estepona-manilva-sanpedro-fuengirola.jpeg',
     description: 'Pelajari dasar-dasar periklanan di Facebook dari nol hingga mahir. Cocok untuk pemula dan pemilik bisnis.',
     videos: [
       { title: 'Materi 1: Pengenalan Platform', duration: '17:09', videoUrl: 'https://www.youtube.com/watch?v=NjQAwrFlGJ8' },
@@ -64,7 +64,7 @@ export const dummyCourses: Course[] = [
     description: 'Pelajari cara kerja Google Ads dan bagaimana cara menggunakannya untuk menjangkau pelanggan potensial.',
     videos: [
       { title: 'Pengantar Google Ads', duration: '10:25', videoUrl: 'https://www.youtube.com/watch?v=_iswCWy1v8Q' },
-      { title: 'Materi 1: Pengenalan Google Ads', duration: '2:56', videoUrl: 'https://www.youtube.com/watch?v=fctQ_F_ODls' },
+      { title: 'Materi 1: Pengenalan Google Ads', duration: '2:56', videoUrl: 'https://www.youtube.com/watch?v=fctQ_ODls' },
       { title: 'Materi 2: Setup Kampanye', duration: '15:47', videoUrl: 'https://www.youtube.com/watch?v=1lNSiMkNLU8' },
     ],
   },
