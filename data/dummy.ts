@@ -63,8 +63,9 @@ export const dummyCourses: Course[] = [
     thumbnail: 'https://picsum.photos/seed/googleads/400/225',
     description: 'Pelajari cara kerja Google Ads dan bagaimana cara menggunakannya untuk menjangkau pelanggan potensial.',
     videos: [
-      { title: 'Materi 1: Pengenalan Google Ads', duration: '10:32', videoUrl: 'https://videos.pexels.com/video-files/854128/854128-sd_640_360_25fps.mp4' },
-      { title: 'Materi 2: Setup Kampanye', duration: '15:01', videoUrl: 'https://videos.pexels.com/video-files/3254013/3254013-sd_640_360_30fps.mp4' },
+      { title: 'Pengantar Google Ads', duration: '10:25', videoUrl: 'https://www.youtube.com/watch?v=_iswCWy1v8Q' },
+      { title: 'Materi 1: Pengenalan Google Ads', duration: '2:56', videoUrl: 'https://www.youtube.com/watch?v=fctQ_F_ODls' },
+      { title: 'Materi 2: Setup Kampanye', duration: '15:47', videoUrl: 'https://www.youtube.com/watch?v=1lNSiMkNLU8' },
     ],
   },
   {
