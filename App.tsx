@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import type { User, Course, Page } from './types';
 import { dummyUser, dummyCourses } from './data/dummy';
 import Logo from './components/Logo';
-import { HomeIcon, CoursesIcon, MentorIcon, ProfileIcon, PlayIcon, CheckCircleIcon, BackIcon } from './components/Icons';
+import { HomeIcon, CoursesIcon, MentorIcon, ProfileIcon, PlayIcon, CheckCircleIcon, BackIcon, SealIcon, NotificationIcon, MoonIcon, LanguageIcon, CameraIcon, ChevronRightIcon, CloseIcon } from './components/Icons';
 import { getMentorResponse } from './services/geminiService';
 import type { ChatMessage } from './types';
 
@@ -43,9 +42,14 @@ const Header = ({ title, showBackButton = false }: { title: string; showBackButt
     );
 };
 
-
 const BottomNav = () => {
     const { navigate, page } = useAppContext();
+    const mainPages: Page[] = ['home', 'my-courses', 'mentor', 'profile'];
+    
+    // Determine the active tab. For sub-pages, we default to no active tab, 
+    // but you could enhance this to keep the parent tab active.
+    const activePage = mainPages.includes(page) ? page : null;
+
 
     const handleNavigate = (pageName: Page) => {
         navigate(pageName);
@@ -64,7 +68,7 @@ const BottomNav = () => {
                 <button
                     key={item.name}
                     onClick={() => handleNavigate(item.name as Page)}
-                    className={`flex flex-col items-center justify-center text-xs transition-colors duration-200 ${page === item.name ? 'text-[#4FA66D]' : 'text-gray-500'}`}
+                    className={`flex flex-col items-center justify-center text-xs transition-colors duration-200 w-full h-full ${activePage === item.name ? 'text-[#4FA66D]' : 'text-gray-500'}`}
                 >
                     <item.icon className="w-6 h-6 mb-1" />
                     {item.label}
@@ -73,6 +77,24 @@ const BottomNav = () => {
         </div>
     );
 };
+
+const VideoPlayerModal = ({ video, onClose }: { video: { title: string; url: string; }; onClose: () => void; }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 animate-fade-in" onClick={onClose}>
+        <div className="bg-white rounded-lg overflow-hidden w-11/12 max-w-2xl shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 flex justify-between items-center border-b">
+                <h3 className="font-bold font-poppins text-lg">{video.title}</h3>
+                <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-200">
+                    <CloseIcon className="w-6 h-6 text-gray-600" />
+                </button>
+            </div>
+            <div className="aspect-video">
+                <video src={video.url} className="w-full h-full" controls autoPlay>
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+);
 
 
 // --- Page Components ---
@@ -127,11 +149,16 @@ const LoginPage = () => {
 
 const HomePage = () => {
     const { user, courses, navigate } = useAppContext();
-    const categories: string[] = ['SEO', 'Ads', 'Copywriting', 'Branding'];
+    const [selectedCategory, setSelectedCategory] = useState('All');
+    const categories: string[] = ['All', 'SEO', 'Ads', 'Copywriting', 'Branding'];
+    
+    const filteredCourses = selectedCategory === 'All'
+        ? courses
+        : courses.filter(course => course.category === selectedCategory);
 
     return (
         <div className="w-full bg-white pb-20">
-            <header className="p-4 flex items-center space-x-3 bg-white sticky top-0 z-10 border-b border-gray-100">
+            <header className="p-4 flex items-center space-x-3 bg-white sticky top-0 z-10 border-b border-gray-100 h-16">
                 <Logo className="w-8 h-8"/>
                 <div>
                     <h1 className="text-lg font-bold font-poppins text-[#2E2E2E]">Hai, {user?.name.split(' ')[0]}!</h1>
@@ -143,7 +170,10 @@ const HomePage = () => {
                     <h2 className="text-xl font-bold font-poppins mb-4">Kategori Kursus</h2>
                     <div className="flex space-x-3 overflow-x-auto pb-3 no-scrollbar">
                         {categories.map(cat => (
-                            <button key={cat} className="flex-shrink-0 bg-gray-100 text-gray-700 px-4 py-2 rounded-full font-semibold text-sm">
+                            <button 
+                                key={cat} 
+                                onClick={() => setSelectedCategory(cat)}
+                                className={`flex-shrink-0 px-4 py-2 rounded-full font-semibold text-sm transition-colors duration-200 ${selectedCategory === cat ? 'bg-[#4FA66D] text-white' : 'bg-gray-100 text-gray-700'}`}>
                                 {cat}
                             </button>
                         ))}
@@ -152,11 +182,11 @@ const HomePage = () => {
                 <section>
                     <h2 className="text-xl font-bold font-poppins mb-4">Kursus Populer</h2>
                     <div className="grid grid-cols-2 gap-4">
-                        {courses.map(course => (
-                            <div key={course.id} className="bg-white rounded-lg overflow-hidden border border-gray-200" onClick={() => navigate('course', { id: course.id })}>
+                        {filteredCourses.map(course => (
+                            <div key={course.id} className="bg-white rounded-lg overflow-hidden border border-gray-200 cursor-pointer" onClick={() => navigate('course', { id: course.id })}>
                                 <img src={course.thumbnail} alt={course.title} className="w-full h-24 object-cover"/>
                                 <div className="p-3">
-                                    <h3 className="font-bold text-sm leading-tight text-[#2E2E2E]">{course.title}</h3>
+                                    <h3 className="font-bold text-sm leading-tight text-[#2E2E2E] line-clamp-2">{course.title}</h3>
                                 </div>
                             </div>
                         ))}
@@ -170,6 +200,8 @@ const HomePage = () => {
 const CourseDetailPage = ({ courseId }: { courseId: number }) => {
     const { courses, navigate } = useAppContext();
     const course = courses.find(c => c.id === courseId);
+    const [playingVideo, setPlayingVideo] = useState<{ title: string; url: string; } | null>(null);
+
 
     if (!course) {
         return (
@@ -181,42 +213,45 @@ const CourseDetailPage = ({ courseId }: { courseId: number }) => {
     }
 
     return (
-        <div className="w-full bg-white flex flex-col h-full">
-            <Header title="Detail Kursus" showBackButton />
-            <div className="flex-1 overflow-y-auto bg-gray-50 pb-20">
-                <img src={course.thumbnail} alt={course.title} className="w-full h-48 object-cover"/>
-                <div className="p-4 space-y-4">
-                    <h1 className="text-2xl font-bold font-poppins">{course.title}</h1>
-                    <p className="text-gray-600">{course.description}</p>
-                    <button className="w-full bg-[#4FA66D] text-white py-3 rounded-lg font-semibold flex items-center justify-center space-x-2">
-                        <PlayIcon className="w-6 h-6"/>
-                        <span>Tonton Sekarang</span>
-                    </button>
-                    <button onClick={() => navigate('mentor')} className="w-full bg-green-100 text-[#4FA66D] py-3 rounded-lg font-semibold border border-green-200">
-                        Tanyakan ke AI Mentor
-                    </button>
-                </div>
-                <div className="bg-white p-4">
-                     <h2 className="text-xl font-bold font-poppins mb-4">Materi Pembelajaran</h2>
-                     <div className="space-y-3">
-                        {course.videos.map((video, index) => (
-                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                               <div className="flex items-center space-x-3">
-                                 <div className="w-8 h-8 bg-green-100 text-[#4FA66D] rounded-full flex items-center justify-center font-bold">{index + 1}</div>
-                                 <div>
-                                   <h3 className="font-semibold text-sm">{video.title}</h3>
-                                   <p className="text-xs text-gray-500">{video.duration}</p>
-                                 </div>
-                               </div>
-                               <div className="w-5 h-5 text-gray-400">
-                                 <PlayIcon />
-                               </div>
-                            </div>
-                        ))}
-                     </div>
+        <>
+            {playingVideo && <VideoPlayerModal video={playingVideo} onClose={() => setPlayingVideo(null)} />}
+            <div className="w-full bg-white flex flex-col h-full">
+                <Header title="Detail Kursus" showBackButton />
+                <div className="flex-1 overflow-y-auto bg-gray-50 pb-20">
+                    <img src={course.thumbnail} alt={course.title} className="w-full h-48 object-cover"/>
+                    <div className="p-4 space-y-4">
+                        <h1 className="text-2xl font-bold font-poppins">{course.title}</h1>
+                        <p className="text-gray-600">{course.description}</p>
+                        <button className="w-full bg-[#4FA66D] text-white py-3 rounded-lg font-semibold flex items-center justify-center space-x-2" onClick={() => setPlayingVideo({ title: course.videos[0].title, url: course.videos[0].videoUrl })}>
+                            <PlayIcon className="w-6 h-6"/>
+                            <span>Tonton Sekarang</span>
+                        </button>
+                        <button onClick={() => navigate('mentor')} className="w-full bg-green-100 text-[#4FA66D] py-3 rounded-lg font-semibold border border-green-200">
+                            Tanyakan ke AI Mentor
+                        </button>
+                    </div>
+                    <div className="bg-white p-4">
+                         <h2 className="text-xl font-bold font-poppins mb-4">Materi Pembelajaran</h2>
+                         <div className="space-y-3">
+                            {course.videos.map((video, index) => (
+                                <button key={index} onClick={() => setPlayingVideo({ title: video.title, url: video.videoUrl })} className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                   <div className="flex items-center space-x-3 text-left">
+                                     <div className="w-8 h-8 bg-green-100 text-[#4FA66D] rounded-full flex items-center justify-center font-bold flex-shrink-0">{index + 1}</div>
+                                     <div>
+                                       <h3 className="font-semibold text-sm">{video.title}</h3>
+                                       <p className="text-xs text-gray-500">{video.duration}</p>
+                                     </div>
+                                   </div>
+                                   <div className="w-6 h-6 text-gray-400">
+                                     <PlayIcon />
+                                   </div>
+                                </button>
+                            ))}
+                         </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
@@ -276,8 +311,8 @@ const AiMentorPage = () => {
                     placeholder="Tanyakan strategi digital marketing..."
                     className="flex-1 px-4 py-2 bg-gray-100 rounded-full focus:outline-none"
                 />
-                <button type="submit" className="ml-3 p-2 bg-[#4FA66D] text-white rounded-full disabled:opacity-50" disabled={isLoading || !input.trim()}>
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                <button type="submit" className="ml-3 p-3 bg-[#4FA66D] text-white rounded-full disabled:opacity-50" disabled={isLoading || !input.trim()}>
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
             </form>
         </div>
@@ -292,26 +327,29 @@ const SubscriptionPage = () => {
     ];
 
     return (
-        <div className="p-4 bg-gray-50 h-full">
-            <h1 className="text-2xl font-bold font-poppins text-center mb-6">Pilih Paket Belajar Kamu</h1>
-            <div className="space-y-4">
-                {plans.map(plan => (
-                    <div key={plan.name} className={`p-6 rounded-lg border-2 ${plan.highlight ? 'border-[#4FA66D] bg-green-50' : 'border-gray-200 bg-white'}`}>
-                        <h2 className="text-xl font-bold font-poppins text-[#4FA66D]">{plan.name}</h2>
-                        <p className="text-3xl font-bold my-2">Rp {plan.price}<span className="text-base font-normal text-gray-500">/bulan</span></p>
-                        <ul className="space-y-2 my-4">
-                            {plan.features.map((feature, i) => (
-                                <li key={i} className="flex items-center space-x-2 text-sm text-gray-700">
-                                    <CheckCircleIcon className="w-5 h-5 text-[#4FA66D] flex-shrink-0"/>
-                                    <span>{feature}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <button className={`w-full py-3 rounded-lg font-semibold ${plan.highlight ? 'bg-[#4FA66D] text-white' : 'bg-gray-200 text-gray-800'}`}>
-                            Langganan Sekarang
-                        </button>
-                    </div>
-                ))}
+        <div className="flex flex-col h-full">
+            <Header title="Langganan" showBackButton />
+            <div className="p-4 bg-gray-50 flex-1">
+                <h1 className="text-2xl font-bold font-poppins text-center mb-6">Pilih Paket Belajar Kamu</h1>
+                <div className="space-y-4">
+                    {plans.map(plan => (
+                        <div key={plan.name} className={`p-6 rounded-lg border-2 ${plan.highlight ? 'border-[#4FA66D] bg-green-50' : 'border-gray-200 bg-white'}`}>
+                            <h2 className="text-xl font-bold font-poppins text-[#4FA66D]">{plan.name}</h2>
+                            <p className="text-3xl font-bold my-2">Rp {plan.price}<span className="text-base font-normal text-gray-500">/bulan</span></p>
+                            <ul className="space-y-2 my-4">
+                                {plan.features.map((feature, i) => (
+                                    <li key={i} className="flex items-center space-x-2 text-sm text-gray-700">
+                                        <CheckCircleIcon className="w-5 h-5 text-[#4FA66D] flex-shrink-0"/>
+                                        <span>{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <button className={`w-full py-3 rounded-lg font-semibold ${plan.highlight ? 'bg-[#4FA66D] text-white' : 'bg-gray-200 text-gray-800'}`}>
+                                Langganan Sekarang
+                            </button>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
@@ -320,30 +358,133 @@ const SubscriptionPage = () => {
 const ProfilePage = () => {
     const { user, logout, navigate } = useAppContext();
     const menuItems = [
-        { name: 'Sertifikat', action: () => {} },
+        { name: 'Sertifikat', action: () => navigate('certificate') },
         { name: 'Paket Langganan', action: () => navigate('subscription') },
-        { name: 'Pengaturan', action: () => {} },
+        { name: 'Pengaturan', action: () => navigate('settings') },
         { name: 'Keluar', action: logout },
     ];
 
     return (
-        <div className="w-full h-full bg-gray-50">
+        <div className="w-full h-full bg-gray-50 pb-20">
             <div className="p-6 bg-white flex flex-col items-center border-b">
                 <img src={user?.avatar} alt="Avatar" className="w-24 h-24 rounded-full mb-4"/>
                 <h1 className="text-xl font-bold font-poppins">{user?.name}</h1>
                 <p className="text-sm text-gray-500">{user?.email}</p>
                 <div className="mt-2 bg-green-100 text-[#4FA66D] text-xs font-bold px-3 py-1 rounded-full">{user?.subscriptionStatus} Member</div>
-                <button className="mt-4 bg-[#4FA66D] text-white px-6 py-2 rounded-lg font-semibold">Edit Profil</button>
+                <button onClick={() => navigate('edit-profile')} className="mt-4 bg-[#4FA66D] text-white px-6 py-2 rounded-lg font-semibold">Edit Profil</button>
             </div>
             <div className="p-4">
-                <div className="bg-white rounded-lg">
+                <div className="bg-white rounded-lg overflow-hidden">
                     {menuItems.map((item, index) => (
-                        <button key={item.name} onClick={item.action} className={`w-full text-left p-4 flex justify-between items-center ${index < menuItems.length - 1 ? 'border-b' : ''} ${item.name === 'Keluar' ? 'text-red-500' : ''}`}>
+                        <button key={item.name} onClick={item.action} className={`w-full text-left p-4 flex justify-between items-center transition-colors hover:bg-gray-50 ${index < menuItems.length - 1 ? 'border-b' : ''} ${item.name === 'Keluar' ? 'text-red-500 font-semibold' : ''}`}>
                             <span>{item.name}</span>
-                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                            <ChevronRightIcon className="w-5 h-5 text-gray-400" />
                         </button>
                     ))}
                 </div>
+            </div>
+        </div>
+    );
+};
+
+const CertificatePage = () => {
+    const { user } = useAppContext();
+    return (
+        <div className="flex flex-col h-full bg-gray-100">
+            <Header title="Sertifikat" showBackButton />
+            <div className="flex-1 p-4 flex items-center justify-center">
+                <div className="w-full max-w-sm bg-white p-6 rounded-lg shadow-lg border-2 border-[#4FA66D] relative">
+                    <div className="absolute top-4 right-4">
+                        <Logo className="w-12 h-12" />
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm text-gray-500 font-semibold">Sertifikat Kelulusan</p>
+                        <h2 className="text-2xl font-bold font-poppins text-[#2E2E2E] my-3">Dasar Facebook Ads</h2>
+                        <p className="text-sm text-gray-600 mb-6">diberikan kepada:</p>
+                        <p className="text-xl font-bold font-poppins text-[#4FA66D]">{user?.name}</p>
+                        <p className="text-xs text-gray-500 mt-1">telah berhasil menyelesaikan kursus dengan baik.</p>
+                    </div>
+                     <div className="mt-8 flex justify-between items-center">
+                        <div className="text-center">
+                            <p className="font-bold text-sm">Budi Darmawan</p>
+                            <p className="text-xs text-gray-500 border-t mt-1 pt-1">CEO SINAW</p>
+                        </div>
+                        <SealIcon className="w-16 h-16 text-green-200" />
+                     </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const SettingsPage = () => {
+    return (
+        <div className="flex flex-col h-full bg-gray-50">
+            <Header title="Pengaturan" showBackButton />
+            <div className="p-4 space-y-4">
+                <div className="bg-white rounded-lg overflow-hidden">
+                    <div className="p-4 flex items-center justify-between border-b">
+                        <div className="flex items-center space-x-3">
+                            <NotificationIcon className="w-6 h-6 text-gray-500" />
+                            <span className="font-semibold">Notifikasi Push</span>
+                        </div>
+                        <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle" id="toggle" className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label htmlFor="toggle" className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    <div className="p-4 flex items-center justify-between border-b">
+                        <div className="flex items-center space-x-3">
+                            <MoonIcon className="w-6 h-6 text-gray-500" />
+                            <span className="font-semibold">Mode Gelap</span>
+                        </div>
+                        <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle2" id="toggle2" className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label htmlFor="toggle2" className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                     <div className="p-4 flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <LanguageIcon className="w-6 h-6 text-gray-500" />
+                            <span className="font-semibold">Bahasa</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                           <span className="text-gray-500">Indonesia</span>
+                           <ChevronRightIcon className="w-5 h-5 text-gray-400"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <style>{`.toggle-checkbox:checked { right: 0; border-color: #4FA66D; } .toggle-checkbox:checked + .toggle-label { background-color: #4FA66D; }`}</style>
+        </div>
+    );
+};
+
+const EditProfilePage = () => {
+    const { user, goBack } = useAppContext();
+    return (
+        <div className="flex flex-col h-full bg-gray-50">
+            <Header title="Edit Profil" showBackButton />
+            <div className="flex-1 p-6 space-y-6">
+                <div className="relative w-32 h-32 mx-auto">
+                    <img src={user?.avatar} alt="Avatar" className="w-full h-full rounded-full object-cover" />
+                    <button className="absolute bottom-0 right-0 bg-[#4FA66D] text-white p-2 rounded-full border-2 border-white">
+                        <CameraIcon className="w-6 h-6" />
+                    </button>
+                </div>
+                <div className="space-y-4">
+                    <div>
+                        <label className="text-sm font-semibold text-gray-600 mb-1 block">Nama Lengkap</label>
+                        <input type="text" defaultValue={user?.name} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4FA66D]" />
+                    </div>
+                    <div>
+                        <label className="text-sm font-semibold text-gray-600 mb-1 block">Email</label>
+                        <input type="email" defaultValue={user?.email} disabled className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500" />
+                    </div>
+                </div>
+                <button onClick={goBack} className="w-full bg-[#4FA66D] text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                    Simpan Perubahan
+                </button>
             </div>
         </div>
     );
@@ -380,8 +521,9 @@ export default function App() {
 
   const navigate = useCallback((newPage: Page, newParams: any = {}) => {
     const bottomNavPages: Page[] = ['home', 'my-courses', 'mentor', 'profile'];
-    // If navigating to a main tab page, clear history.
-    if (bottomNavPages.includes(newPage)) {
+    
+    // If navigating to a main tab page from another main tab, clear history.
+    if (bottomNavPages.includes(newPage) && bottomNavPages.includes(page)) {
         setHistory([]);
     } else {
         // Otherwise, it's a drill-down, so add the current page to history.
@@ -392,9 +534,9 @@ export default function App() {
   }, [page, pageParams]);
 
   const goBack = useCallback(() => {
-    const lastState = history[history.length - 1];
+    const lastState = history.pop(); // Use pop to modify and get the last state
     if (lastState) {
-        setHistory(prev => prev.slice(0, -1));
+        setHistory([...history]); // Update state with the modified history
         setPage(lastState.page);
         setPageParams(lastState.params);
     } else {
@@ -424,18 +566,24 @@ export default function App() {
       case 'mentor': return <AiMentorPage />;
       case 'profile': return <ProfilePage />;
       case 'subscription': return <SubscriptionPage />;
+      case 'certificate': return <CertificatePage />;
+      case 'settings': return <SettingsPage />;
+      case 'edit-profile': return <EditProfilePage />;
       default: return <HomePage />;
     }
   };
+  
+  const showBottomNav = user && ['home', 'my-courses', 'mentor', 'profile'].includes(page);
+
 
   return (
     <AppContext.Provider value={contextValue}>
       <div className="w-full min-h-screen bg-gray-200 flex justify-center">
         <div className="w-full max-w-md h-screen bg-white shadow-2xl relative overflow-hidden">
-          <main className="h-full w-full overflow-y-auto smooth-scroll">
+          <main className={`h-full w-full overflow-y-auto smooth-scroll ${showBottomNav ? 'pb-16' : ''}`}>
             {renderPage()}
           </main>
-          {user && page !== 'mentor' && (
+          {showBottomNav && (
             <div className="absolute bottom-0 w-full">
               <BottomNav />
             </div>
