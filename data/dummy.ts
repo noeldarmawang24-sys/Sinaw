@@ -15,9 +15,9 @@ export const dummyCourses: Course[] = [
     thumbnail: 'https://picsum.photos/seed/fbads/400/225',
     description: 'Pelajari dasar-dasar periklanan di Facebook dari nol hingga mahir. Cocok untuk pemula dan pemilik bisnis.',
     videos: [
-      { title: 'Materi 1: Pengenalan Platform', duration: '10:32', videoUrl: 'https://videos.pexels.com/video-files/854128/854128-sd_640_360_25fps.mp4' },
-      { title: 'Materi 2: Menentukan Target Audience', duration: '15:01', videoUrl: 'https://videos.pexels.com/video-files/3254013/3254013-sd_640_360_30fps.mp4' },
-      { title: 'Materi 3: Membuat Iklan Pertama Anda', duration: '22:15', videoUrl: 'https://videos.pexels.com/video-files/854131/854131-sd_640_360_25fps.mp4' },
+      { title: 'Materi 1: Pengenalan Platform', duration: '17:09', videoUrl: 'https://www.youtube.com/watch?v=NjQAwrFlGJ8' },
+      { title: 'Materi 2: Menentukan Target Audience', duration: '17:09', videoUrl: 'https://www.youtube.com/watch?v=NjQAwrFlGJ8' },
+      { title: 'Materi 3: Membuat Iklan Pertama Anda', duration: '17:09', videoUrl: 'https://www.youtube.com/watch?v=NjQAwrFlGJ8' },
     ],
   },
   {

@@ -78,23 +78,47 @@ const BottomNav = () => {
     );
 };
 
-const VideoPlayerModal = ({ video, onClose }: { video: { title: string; url: string; }; onClose: () => void; }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 animate-fade-in" onClick={onClose}>
-        <div className="bg-white rounded-lg overflow-hidden w-11/12 max-w-2xl shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="p-4 flex justify-between items-center border-b">
-                <h3 className="font-bold font-poppins text-lg">{video.title}</h3>
-                <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-200">
-                    <CloseIcon className="w-6 h-6 text-gray-600" />
-                </button>
-            </div>
-            <div className="aspect-video">
-                <video src={video.url} className="w-full h-full" controls autoPlay>
-                    Your browser does not support the video tag.
-                </video>
+const VideoPlayerModal = ({ video, onClose }: { video: { title: string; url: string; }; onClose: () => void; }) => {
+    const getYouTubeEmbedUrl = (url: string) => {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        if (match && match[2].length === 11) {
+            return `https://www.youtube.com/embed/${match[2]}?autoplay=1&rel=0`;
+        }
+        return null;
+    };
+
+    const embedUrl = getYouTubeEmbedUrl(video.url);
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 animate-fade-in" onClick={onClose}>
+            <div className="bg-white rounded-lg overflow-hidden w-11/12 max-w-2xl shadow-xl" onClick={(e) => e.stopPropagation()}>
+                <div className="p-4 flex justify-between items-center border-b">
+                    <h3 className="font-bold font-poppins text-lg truncate">{video.title}</h3>
+                    <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-200">
+                        <CloseIcon className="w-6 h-6 text-gray-600" />
+                    </button>
+                </div>
+                <div className="aspect-video bg-black">
+                    {embedUrl ? (
+                        <iframe
+                            className="w-full h-full"
+                            src={embedUrl}
+                            title={video.title}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        ></iframe>
+                    ) : (
+                        <video src={video.url} className="w-full h-full" controls autoPlay>
+                            Browser Anda tidak mendukung tag video.
+                        </video>
+                    )}
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 
 // --- Page Components ---
