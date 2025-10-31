@@ -24,7 +24,7 @@ export const dummyCourses: Course[] = [
     id: 2,
     title: 'Strategi SEO UMKM',
     category: 'SEO',
-    thumbnail: 'https://picsum.photos/seed/seoukm/400/225',
+    thumbnail: 'https://cdn.prod.website-files.com/5d8a2888296e91abbdcb65f0/686b27bdbea9eb31a651c698_SEO_Enterprise_landscape.webp',
     description: 'Tingkatkan visibilitas bisnis UMKM Anda di mesin pencari Google dengan strategi SEO yang terbukti berhasil.',
     videos: [
       { title: 'Pengenalan Strategi SEO', duration: '14:03', videoUrl: 'https://www.youtube.com/watch?v=FIB42_nrQP0' },
