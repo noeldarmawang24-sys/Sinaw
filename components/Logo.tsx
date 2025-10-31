@@ -16,7 +16,7 @@ const Logo: React.FC<LogoProps> = ({ className }) => (
         <path 
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M50,0 L95,25 V60 C95,68.28 88.28,75 80,75 H20 C11.72,75 5,68.28 5,60 V25 L50,0 Z M69,42.5 L44,27.5 V57.5 L69,42.5 Z"
+            d="M50,0 L95,25 L85,60 C85,68 80,70 75,70 H25 C20,70 15,68 15,60 L5,25 Z M40,30 L70,45 L40,60 Z"
         />
     </svg>
 );
