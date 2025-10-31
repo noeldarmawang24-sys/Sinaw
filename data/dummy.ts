@@ -27,8 +27,9 @@ export const dummyCourses: Course[] = [
     thumbnail: 'https://picsum.photos/seed/seoukm/400/225',
     description: 'Tingkatkan visibilitas bisnis UMKM Anda di mesin pencari Google dengan strategi SEO yang terbukti berhasil.',
     videos: [
-      { title: 'Materi 1: Riset Kata Kunci', duration: '12:50', videoUrl: 'https://videos.pexels.com/video-files/3254013/3254013-sd_640_360_30fps.mp4' },
-      { title: 'Materi 2: Optimasi On-Page', duration: '18:20', videoUrl: 'https://videos.pexels.com/video-files/854131/854131-sd_640_360_25fps.mp4' },
+      { title: 'Pengenalan Strategi SEO', duration: '14:03', videoUrl: 'https://www.youtube.com/watch?v=FIB42_nrQP0' },
+      { title: 'Materi 1: Riset Kata Kunci', duration: '11:15', videoUrl: 'https://www.youtube.com/watch?v=6gtLX1WfJBc' },
+      { title: 'Materi 2: Optimasi On-Page', duration: '14:38', videoUrl: 'https://www.youtube.com/watch?v=RXhQYeqmOKU' },
     ],
   },
   {
@@ -38,8 +39,9 @@ export const dummyCourses: Course[] = [
     thumbnail: 'https://picsum.photos/seed/copy/400/225',
     description: 'Kuasai seni menulis teks iklan yang menjual dan mampu menarik perhatian pelanggan.',
     videos: [
-      { title: 'Materi 1: Formula AIDA', duration: '8:45', videoUrl: 'https://videos.pexels.com/video-files/5901249/5901249-sd_640_360_25fps.mp4' },
-      { title: 'Materi 2: Menulis Headline Memukau', duration: '11:30', videoUrl: 'https://videos.pexels.com/video-files/6981648/6981648-sd_640_360_25fps.mp4' },
+      { title: 'Pengenalan Copywriting', duration: '15:58', videoUrl: 'https://www.youtube.com/watch?v=w7drAXsN8xA' },
+      { title: 'Materi 1: Formula AIDA', duration: '10:48', videoUrl: 'https://www.youtube.com/watch?v=CfjekU6ud6w' },
+      { title: 'Materi 2: Menulis Headline Memukau', duration: '15:36', videoUrl: 'https://www.youtube.com/watch?v=2_pc32aze2s' },
     ],
   },
   {
@@ -49,8 +51,9 @@ export const dummyCourses: Course[] = [
     thumbnail: 'https://picsum.photos/seed/brand/400/225',
     description: 'Bangun citra diri yang kuat di dunia digital untuk meningkatkan karir dan bisnis Anda.',
     videos: [
-      { title: 'Materi 1: Menemukan Niche Anda', duration: '14:00', videoUrl: 'https://videos.pexels.com/video-files/7578536/7578536-sd_640_360_25fps.mp4' },
-      { title: 'Materi 2: Konsistensi Konten', duration: '16:10', videoUrl: 'https://videos.pexels.com/video-files/855390/855390-sd_640_360_24fps.mp4' },
+      { title: 'Pengenalan Personal Branding', duration: '12:12', videoUrl: 'https://www.youtube.com/watch?v=rXFv62-noaI' },
+      { title: 'Materi 1: Menemukan Niche Anda', duration: '11:42', videoUrl: 'https://www.youtube.com/watch?v=YPfOxTdv-M0' },
+      { title: 'Materi 2: Konsistensi Konten', duration: '11:59', videoUrl: 'https://www.youtube.com/watch?v=vx8Qh4WcdyM' },
     ],
   },
    {
@@ -71,8 +74,8 @@ export const dummyCourses: Course[] = [
     thumbnail: 'https://picsum.photos/seed/linkbuild/400/225',
     description: 'Strategi mendapatkan backlink berkualitas untuk meningkatkan ranking website Anda.',
     videos: [
-      { title: 'Materi 1: Apa itu Backlink?', duration: '9:20', videoUrl: 'https://videos.pexels.com/video-files/3254013/3254013-sd_640_360_30fps.mp4' },
-      { title: 'Materi 2: Teknik Outreach', duration: '20:05', videoUrl: 'https://videos.pexels.com/video-files/854131/854131-sd_640_360_25fps.mp4' },
+      { title: 'Apa itu Backlink?', duration: '9:20', videoUrl: 'https://videos.pexels.com/video-files/3254013/3254013-sd_640_360_30fps.mp4' },
+      { title: 'Teknik Outreach', duration: '20:05', videoUrl: 'https://videos.pexels.com/video-files/854131/854131-sd_640_360_25fps.mp4' },
     ],
   },
 ];
