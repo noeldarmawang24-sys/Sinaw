@@ -75,8 +75,9 @@ export const dummyCourses: Course[] = [
     thumbnail: 'https://picsum.photos/seed/linkbuild/400/225',
     description: 'Strategi mendapatkan backlink berkualitas untuk meningkatkan ranking website Anda.',
     videos: [
-      { title: 'Apa itu Backlink?', duration: '9:20', videoUrl: 'https://videos.pexels.com/video-files/3254013/3254013-sd_640_360_30fps.mp4' },
-      { title: 'Teknik Outreach', duration: '20:05', videoUrl: 'https://videos.pexels.com/video-files/854131/854131-sd_640_360_25fps.mp4' },
+      { title: 'Pengenalan Link Building', duration: '14:11', videoUrl: 'https://www.youtube.com/watch?v=oFyF417Q0oM' },
+      { title: 'Materi 1: Apa itu Backlink?', duration: '9:20', videoUrl: 'https://www.youtube.com/watch?v=-DqXt_a0HUc' },
+      { title: 'Materi 2: Teknik Outreach', duration: '15:45', videoUrl: 'https://www.youtube.com/watch?v=7uEn30ey1mk' },
     ],
   },
 ];
