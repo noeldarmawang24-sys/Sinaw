@@ -22,4 +22,16 @@ export interface ChatMessage {
   sender: 'user' | 'ai';
 }
 
+export interface ScheduleItem {
+  id: number;
+  date: string; // "YYYY-MM-DD"
+  courseCode: string;
+  courseName: string;
+  classType: 'Onsite Class' | 'Online Class';
+  sessionInfo: string; // e.g., "F2F"
+  sessionNumber: number;
+  time: string; // e.g., "11:20 - 13:00 GMT+7"
+  location: string;
+}
+
 export type Page = 'splash' | 'login' | 'home' | 'course' | 'mentor' | 'profile' | 'subscription' | 'my-courses' | 'settings' | 'certificate' | 'edit-profile';

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
-import type { User, Course, Page } from './types';
-import { dummyUser, dummyCourses } from './data/dummy';
+import type { User, Course, Page, ScheduleItem } from './types';
+import { dummyUser, dummyCourses, dummySchedule } from './data/dummy';
 import Logo from './components/Logo';
-import { HomeIcon, CoursesIcon, MentorIcon, ProfileIcon, PlayIcon, CheckCircleIcon, BackIcon, SealIcon, NotificationIcon, MoonIcon, LanguageIcon, CameraIcon, ChevronRightIcon, CloseIcon } from './components/Icons';
+import { HomeIcon, CoursesIcon, MentorIcon, ProfileIcon, PlayIcon, CheckCircleIcon, BackIcon, SealIcon, NotificationIcon, MoonIcon, LanguageIcon, CameraIcon, ChevronRightIcon, CloseIcon, ClockIcon, LocationMarkerIcon, InfoIcon, AcademicCapIcon } from './components/Icons';
 import { getMentorResponse } from './services/geminiService';
 import type { ChatMessage } from './types';
 
@@ -57,7 +57,7 @@ const BottomNav = () => {
 
     const navItems = [
         { name: 'home', icon: HomeIcon, label: 'Home' },
-        { name: 'my-courses', icon: CoursesIcon, label: 'Kursus Saya' },
+        { name: 'my-courses', icon: CoursesIcon, label: 'Jadwal' },
         { name: 'mentor', icon: MentorIcon, label: 'Mentor' },
         { name: 'profile', icon: ProfileIcon, label: 'Profil' },
     ];
@@ -343,6 +343,141 @@ const AiMentorPage = () => {
     );
 };
 
+const MyCoursesPage = () => {
+    const [currentDate, setCurrentDate] = useState(new Date('2025-11-03T00:00:00'));
+    const [selectedDate, setSelectedDate] = useState(new Date('2025-11-03T00:00:00'));
+    const [schedule, setSchedule] = useState<ScheduleItem[]>(dummySchedule);
+
+    const scheduleByDate = React.useMemo(() => {
+        return schedule.reduce((acc, item) => {
+            (acc[item.date] = acc[item.date] || []).push(item);
+            return acc;
+        }, {} as Record<string, ScheduleItem[]>);
+    }, [schedule]);
+
+    const changeMonth = (amount: number) => {
+        setCurrentDate(prev => {
+            const newDate = new Date(prev);
+            newDate.setMonth(newDate.getMonth() + amount);
+            return newDate;
+        });
+    };
+    
+    const renderCalendar = () => {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const days = [];
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            days.push(<div key={`empty-${i}`} className="text-center p-1"></div>);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(year, month, day);
+            const dateString = date.toISOString().split('T')[0];
+            const isSelected = selectedDate.toDateString() === date.toDateString();
+            const hasEvent = scheduleByDate[dateString];
+            const isToday = new Date().toDateString() === date.toDateString();
+
+            days.push(
+                <div key={day} className="text-center p-1 flex flex-col items-center">
+                    <button
+                        onClick={() => setSelectedDate(date)}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center relative transition-colors ${
+                            isSelected ? 'bg-blue-500 text-white' : isToday ? 'text-blue-500' : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                    >
+                        {day}
+                    </button>
+                    {hasEvent && <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-1"></div>}
+                </div>
+            );
+        }
+
+        return (
+             <div className="bg-white rounded-lg shadow p-4">
+                <div className="flex items-center justify-between mb-4">
+                    <button onClick={() => changeMonth(-1)} className="p-2 rounded-full hover:bg-gray-100">
+                       <BackIcon className="w-5 h-5" />
+                    </button>
+                    <h2 className="font-bold text-lg font-poppins">
+                        {currentDate.toLocaleString('id-ID', { month: 'long', year: 'numeric' })}
+                    </h2>
+                    <button onClick={() => changeMonth(1)} className="p-2 rounded-full hover:bg-gray-100">
+                       <ChevronRightIcon className="w-5 h-5" />
+                    </button>
+                </div>
+                <div className="grid grid-cols-7 gap-y-2 text-sm text-gray-500 mb-2">
+                    {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map(d => <div key={d} className="text-center font-semibold">{d}</div>)}
+                </div>
+                <div className="grid grid-cols-7 gap-y-1">
+                    {days}
+                </div>
+            </div>
+        )
+    };
+    
+    const selectedDateString = selectedDate.toISOString().split('T')[0];
+    const eventsForSelectedDay = scheduleByDate[selectedDateString] || [];
+
+    return (
+        <div className="w-full bg-gray-50 pb-20 h-full flex flex-col">
+           <Header title="Jadwal Kursus" />
+           <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {renderCalendar()}
+              <div>
+                 <h3 className="font-bold text-lg font-poppins my-4">
+                    {selectedDate.toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </h3>
+                 {eventsForSelectedDay.length > 0 ? (
+                     <div className="space-y-4">
+                         {eventsForSelectedDay.map(item => (
+                             <div key={item.id} className="bg-white rounded-lg shadow-md p-4 pl-8 relative">
+                                <div className="absolute left-4 top-4 bottom-4 w-0.5 bg-gray-200"></div>
+                                <div className="absolute left-[11px] top-4 w-3 h-3 bg-gray-400 rounded-full border-2 border-white"></div>
+                                
+                                <div>
+                                    <div className="flex justify-between items-start mb-1">
+                                        <h4 className="font-bold text-base font-poppins text-gray-800">{item.courseCode}</h4>
+                                        <span className="text-xs font-semibold bg-gray-200 text-gray-700 px-2 py-1 rounded-full">{item.classType}</span>
+                                    </div>
+                                    <p className="text-gray-700 font-semibold mb-3">{item.courseName}</p>
+                                    <div className="space-y-2 text-sm text-gray-500">
+                                       <div className="flex items-center">
+                                            <InfoIcon className="w-4 h-4 mr-2 text-gray-400 flex-shrink-0"/>
+                                            <span>{item.sessionInfo}</span>
+                                       </div>
+                                       <div className="flex items-center">
+                                            <AcademicCapIcon className="w-4 h-4 mr-2 text-gray-400 flex-shrink-0"/>
+                                            <span>Sesi {item.sessionNumber}</span>
+                                       </div>
+                                       <div className="flex items-center">
+                                            <ClockIcon className="w-4 h-4 mr-2 text-gray-400 flex-shrink-0"/>
+                                            <span>{item.time}</span>
+                                       </div>
+                                       <div className="flex items-center">
+                                            <LocationMarkerIcon className="w-4 h-4 mr-2 text-gray-400 flex-shrink-0"/>
+                                            <span>{item.location}</span>
+                                       </div>
+                                    </div>
+                                </div>
+                             </div>
+                         ))}
+                     </div>
+                 ) : (
+                     <div className="text-center py-10">
+                         <p className="text-gray-500">Tidak ada jadwal kursus hari ini.</p>
+                     </div>
+                 )}
+              </div>
+           </div>
+        </div>
+    );
+};
+
 const SubscriptionPage = () => {
     const plans = [
         { name: 'freemium', price: '0', features: ['Akses 2 kursus gratis', 'Tanya AI Mentor terbatas'] },
@@ -585,7 +720,7 @@ export default function App() {
       case 'splash': return <SplashScreen />;
       case 'login': return <LoginPage />;
       case 'home': return <HomePage />;
-      case 'my-courses': return <div className="p-4 text-center">Halaman Kursus Saya</div>;
+      case 'my-courses': return <MyCoursesPage />;
       case 'course': return <CourseDetailPage courseId={pageParams.id} />;
       case 'mentor': return <AiMentorPage />;
       case 'profile': return <ProfilePage />;
