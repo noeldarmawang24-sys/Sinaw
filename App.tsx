@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, createContext, useContext } fr
 import type { User, Course, Page, ScheduleItem } from './types';
 import { dummyUser, dummyCourses, dummySchedule } from './data/dummy';
 import Logo from './components/Logo';
-import { HomeIcon, CoursesIcon, MentorIcon, ProfileIcon, PlayIcon, CheckCircleIcon, BackIcon, SealIcon, NotificationIcon, MoonIcon, LanguageIcon, CameraIcon, ChevronRightIcon, CloseIcon, ClockIcon, LocationMarkerIcon, InfoIcon, AcademicCapIcon } from './components/Icons';
+import { HomeIcon, CoursesIcon, MentorIcon, ProfileIcon, PlayIcon, CheckCircleIcon, BackIcon, SealIcon, NotificationIcon, MoonIcon, LanguageIcon, CameraIcon, ChevronRightIcon, CloseIcon, ClockIcon, LocationMarkerIcon, InfoIcon, AcademicCapIcon, CalendarIcon } from './components/Icons';
 import { getMentorResponse } from './services/geminiService';
 import type { ChatMessage } from './types';
 
@@ -176,6 +176,52 @@ const HomePage = () => {
     const [selectedCategory, setSelectedCategory] = useState('All');
     const categories: string[] = ['All', 'SEO', 'Ads', 'Copywriting', 'Branding'];
     
+    const [upcomingClass, setUpcomingClass] = useState<(ScheduleItem & { startDateTime: Date }) | null>(null);
+    const [timeUntil, setTimeUntil] = useState('');
+
+    useEffect(() => {
+        const findAndSetUpcomingClass = () => {
+            // Note: Hardcoded date to show the first upcoming class from the corrected schedule
+            const now = new Date('2025-11-02T10:00:00'); 
+            const futureSchedules = dummySchedule
+                .map(item => {
+                    const startTimeStr = item.time.split(' - ')[0];
+                    const dateTimeStr = `${item.date}T${startTimeStr}:00+07:00`;
+                    return { ...item, startDateTime: new Date(dateTimeStr) };
+                })
+                .filter(item => item.startDateTime > now)
+                .sort((a, b) => a.startDateTime.getTime() - b.startDateTime.getTime());
+
+            const nextClass = futureSchedules[0] || null;
+            setUpcomingClass(nextClass);
+
+            if (nextClass) {
+                const diff = nextClass.startDateTime.getTime() - now.getTime();
+                
+                if (diff <= 0) {
+                    setTimeUntil("Dimulai sekarang!");
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                let timeString = 'Dimulai dalam ';
+                if (days > 0) timeString += `${days} hari `;
+                if (hours > 0) timeString += `${hours} jam `;
+                if (minutes > 0 || (days === 0 && hours === 0)) timeString += `${minutes} mnt`;
+                
+                setTimeUntil(timeString.trim());
+            }
+        };
+
+        findAndSetUpcomingClass();
+        const intervalId = setInterval(findAndSetUpcomingClass, 60000); // Update every minute
+
+        return () => clearInterval(intervalId);
+    }, []);
+
     const filteredCourses = selectedCategory === 'All'
         ? courses
         : courses.filter(course => course.category === selectedCategory);
@@ -190,6 +236,30 @@ const HomePage = () => {
                 </div>
             </header>
             <main className="p-4 space-y-6">
+                {upcomingClass && (
+                    <section>
+                        <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-xl p-5 shadow-lg">
+                            <p className="font-bold text-sm uppercase tracking-wider text-gray-300 mb-1">{`KELAS MENDATANG: SESI ${upcomingClass.sessionNumber}`}</p>
+                            <h2 className="text-2xl font-bold font-poppins mb-2">{upcomingClass.courseName}</h2>
+                            <div className="flex items-center space-x-4 text-gray-200 text-sm mb-4">
+                               <div className="flex items-center space-x-2">
+                                    <ClockIcon className="w-4 h-4" />
+                                    <span>{upcomingClass.time.split(' - ')[0]}</span>
+                               </div>
+                                <div className="flex items-center space-x-2">
+                                    <CalendarIcon className="w-4 h-4" />
+                                    <span>4 Nov</span>
+                               </div>
+                            </div>
+                             <div className="bg-white/10 rounded-lg p-3 text-center mb-4">
+                                <p className="font-semibold">{timeUntil}</p>
+                             </div>
+                             <button onClick={() => navigate('my-courses')} className="w-full bg-white text-slate-900 py-2.5 rounded-lg font-bold hover:bg-gray-200 transition-colors">
+                                Lihat Jadwal
+                             </button>
+                        </div>
+                    </section>
+                )}
                 <section>
                     <h2 className="text-xl font-bold font-poppins mb-4">Kategori Kursus</h2>
                     <div className="flex space-x-3 overflow-x-auto pb-3 no-scrollbar">
@@ -457,10 +527,6 @@ const MyCoursesPage = () => {
                                        <div className="flex items-center">
                                             <ClockIcon className="w-4 h-4 mr-2 text-gray-400 flex-shrink-0"/>
                                             <span>{item.time}</span>
-                                       </div>
-                                       <div className="flex items-center">
-                                            <LocationMarkerIcon className="w-4 h-4 mr-2 text-gray-400 flex-shrink-0"/>
-                                            <span>{item.location}</span>
                                        </div>
                                     </div>
                                 </div>
