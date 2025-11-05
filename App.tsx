@@ -345,9 +345,9 @@ const AiMentorPage = () => {
 
 const SubscriptionPage = () => {
     const plans = [
-        { name: 'Free', price: '0', features: ['Akses 2 kursus gratis', 'Tanya AI Mentor terbatas'] },
-        { name: 'Basic', price: '49K', features: ['Akses 10 kursus', 'Tanya AI Mentor', 'Sertifikat digital'] },
-        { name: 'Pro', price: '99K', features: ['Akses semua kursus', 'Tanya AI Mentor tanpa batas', 'Sertifikat digital', 'Grup Komunitas'], highlight: true },
+        { name: 'freemium', price: '0', features: ['Akses 2 kursus gratis', 'Tanya AI Mentor terbatas'] },
+        { name: 'sinaw-pro', price: '49K', features: ['Akses 10 kursus', 'Tanya AI Mentor', 'Sertifikat digital'] },
+        { name: 'sinaw-proficient', price: '99K', features: ['Akses semua kursus', 'Tanya AI Mentor tanpa batas', 'Sertifikat digital', 'Grup Komunitas'], highlight: true },
     ];
 
     return (
@@ -358,7 +358,7 @@ const SubscriptionPage = () => {
                 <div className="space-y-4">
                     {plans.map(plan => (
                         <div key={plan.name} className={`p-6 rounded-lg border-2 ${plan.highlight ? 'border-[#4FA66D] bg-green-50' : 'border-gray-200 bg-white'}`}>
-                            <h2 className="text-xl font-bold font-poppins text-[#4FA66D]">{plan.name}</h2>
+                            <h2 className="text-xl font-bold font-poppins text-[#4FA66D] capitalize">{plan.name.replace('-', ' ')}</h2>
                             <p className="text-3xl font-bold my-2">Rp {plan.price}<span className="text-base font-normal text-gray-500">/bulan</span></p>
                             <ul className="space-y-2 my-4">
                                 {plan.features.map((feature, i) => (
@@ -394,7 +394,7 @@ const ProfilePage = () => {
                 <img src={user?.avatar} alt="Avatar" className="w-24 h-24 rounded-full mb-4"/>
                 <h1 className="text-xl font-bold font-poppins">{user?.name}</h1>
                 <p className="text-sm text-gray-500">{user?.email}</p>
-                <div className="mt-2 bg-green-100 text-[#4FA66D] text-xs font-bold px-3 py-1 rounded-full">{user?.subscriptionStatus} Member</div>
+                <div className="mt-2 bg-green-100 text-[#4FA66D] text-xs font-bold px-3 py-1 rounded-full capitalize">{user?.subscriptionStatus?.replace('-', ' ')} Member</div>
                 <button onClick={() => navigate('edit-profile')} className="mt-4 bg-[#4FA66D] text-white px-6 py-2 rounded-lg font-semibold">Edit Profil</button>
             </div>
             <div className="p-4">

@@ -2,7 +2,7 @@ export interface User {
   name: string;
   email: string;
   avatar: string;
-  subscriptionStatus: 'Free' | 'Basic' | 'Pro';
+  subscriptionStatus: 'freemium' | 'sinaw-pro' | 'sinaw-proficient';
 }
 
 export interface Course {

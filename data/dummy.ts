@@ -4,7 +4,7 @@ export const dummyUser: User = {
   name: 'Budi Darmawan',
   email: 'budi.darmawan@example.com',
   avatar: 'https://picsum.photos/seed/user/100',
-  subscriptionStatus: 'Pro',
+  subscriptionStatus: 'sinaw-proficient',
 };
 
 export const dummyCourses: Course[] = [
